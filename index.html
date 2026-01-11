@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第12屆精鍊讀書會 - 會員查詢(260111更新）</title>
+    <title>第12屆精鍊讀書會 - 會員查詢</title>
     <style>
         :root {
             --primary-color: #1a1a1a;
-            --accent-color: #d4af37; /* 金色點綴，增加質感 */
-            --bg-color: #f4f4f4;
+            --accent-color: #d4af37;
+            --bg-color: #f8f9fa;
             --card-bg: #ffffff;
+            --line-green: #06C755;
         }
 
         body {
@@ -18,18 +19,19 @@
             margin: 0;
             padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
             width: 100%;
             max-width: 500px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         h1 { font-size: 1.6rem; color: var(--primary-color); margin-bottom: 5px; }
@@ -37,7 +39,9 @@
 
         /* 搜尋框 */
         .search-box {
-            position: relative;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
             margin-bottom: 20px;
         }
 
@@ -45,11 +49,12 @@
             width: 100%;
             padding: 15px;
             font-size: 1.1rem;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
             box-sizing: border-box;
             outline: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: border-color 0.3s;
         }
 
         input:focus {
@@ -60,50 +65,88 @@
         #resultList {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
         .result-item {
             background: var(--card-bg);
             padding: 18px;
-            border-radius: 8px;
+            border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             border-left: 6px solid var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             animation: fadeIn 0.3s ease;
         }
 
-        /* 您要求的格式：# 70 - 卓俐伶 */
         .member-info {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #333;
-            letter-spacing: 1px;
         }
 
         .category-label {
-            display: block;
             font-size: 0.8rem;
             color: #888;
-            margin-top: 5px;
-            font-weight: normal;
+            margin-top: 4px;
         }
 
-        .no-data {
-            text-align: center;
-            color: #999;
-            margin-top: 50px;
+        /* 複製按鈕 */
+        .copy-btn {
+            background: #eee;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
         }
+
+        .copy-btn:active { background: var(--accent-color); color: white; }
+
+        /* Line 群組區塊 */
+        .line-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid #eee;
+            margin-top: 20px;
+        }
+
+        .line-section h3 { margin-top: 0; color: var(--line-green); }
+
+        .qrcode-img {
+            width: 180px;
+            height: 180px;
+            margin: 15px 0;
+            border: 5px solid #f9f9f9;
+        }
+
+        .line-link {
+            display: inline-block;
+            background: var(--line-green);
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 10px;
+            width: 80%;
+        }
+
+        .no-data { text-align: center; color: #999; padding: 40px 0; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 手機版適配 */
         @media (max-width: 480px) {
             h1 { font-size: 1.4rem; }
-            input { padding: 12px; font-size: 1rem; }
-            .member-info { font-size: 1.15rem; }
+            .member-info { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -116,29 +159,30 @@
     </header>
 
     <div class="search-box">
-        <input type="text" id="userInput" placeholder="輸入姓名或編號查詢..." autocomplete="off">
+        <input type="text" id="userInput" placeholder="搜尋姓名或編號..." autocomplete="off">
     </div>
 
     <div id="resultList">
-        <div class="no-data">請輸入姓名或編號</div>
+        <div class="no-data">請輸入關鍵字開始查詢</div>
+    </div>
+
+    <div class="line-section">
+        <h3>📢 正式會員專屬群組</h3>
+        <p style="font-size: 0.9rem; color: #666;">點擊下方按鈕或掃描 QR Code 加入</p>
+        <img src="QrCode.jpg" alt="Line 群組 QR Code" class="qrcode-img"><br>
+        <a href="https://line.me/ti/g2/wweVhGYcLvxLluO4KvXVfv9q3MFrcNsusRL_MA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" class="line-link">
+            點此加入 Line 社群
+        </a>
     </div>
 </div>
 
 <script>
-    /**
-     * 【更新名單教學】
-     * 只要在下方的引號內貼上名字，程式會自動依照「幹部 -> VIP -> 菁英」的順序產生編號。
-     * 名字之間用空格或換行隔開即可。
-     */
     const dataSources = {
         "讀書會幹部": `楊儒霖 張秀涵 羅伊珍 王慧文 郭士瑜 陳秀綾 鄒松樺 曾俊卿 吳亭萱 鄭凱鴻 林穎楨 陳伊莉 蕭宇喬 張安發 林妤暄 劉上禎 簡子綋 周珊羽 劉靜芳 簡秀芬 張惠美 劉哲伶 莊漢鵬`,
-        
         "創始會長 & VIP": `林健祥 謝宏紳 秦永澤 李建平 潘文琦 曾覺民 高韋秀 王郁婷 吳亮輝 張嫚玲 林青青 葉淑麗`,
-        
-        "菁英會員": `羅慶章 劉怡靜 江敏華 胡庭瑀 林青諺 鍾昇達 李俊彥 陳柏睿 李亭宜 周哲緯 郭秀瑚 朱世杰 何永清 史淑珍 張綺莉 黃振南 陳家雯 魏宛筠 蘇云睿 王曉嵐 甘偲穎 蕭媖瑛 趙桂英 陳信華 吳奇峯 張海樺 張國俊 黃熙翔 葉芝潔 賴尚儀 陳柔安 楊涵甯 廖雲祥 劉美玲 卓俐伶 陳鼎元 鍾環貝 陳君惠 江佩玟 山本貴子 李美玲 陳雨蓁 謝昇穎 林珏吟 陳炎諄 紀賢良 詹靜宜 李國棟 林鈺欽 郭耿維 沈琬 林季寰 官羣峯 薛信月 張惠姿 王瀅婷 吳蕙棻 官巧晶 吳雅嵐 李安琪 陳憶涵 尤儷玲 蕭韻紋 張喆然 黃怡貞 孫欣瑜 蕭佳伶 林靜怡 劉家佐 陳玉珠 林劍鑫 蘇昱彰 邵柏仁 陳崧源 方瀛 李國榮 陳雅芳 邱薰儀 李玹 張貴博 江年生 劉可萱 王志豪 林建宇 陳思樺 陳彥良 吳思辰 蔡柏晟 許良玉 楊修偉 施姵瑄 楊美娥 王嬿婷 賴淑萍 林秀卿 陳文修 官哲至 楊媛媛 蔡東麟 吳芸臻 呂緗翎 陳怡君 林辰 張慎欣 方淑君 李明卓 謝伊婷 王姍喬 黃素秋 孫羚沄 劉建良 吳曼毓 焦珆安 沈惠娟 蔡宏政 黃湲真 施淑惠 方淑鳳 范禾婷 陳吳柏霖 孫大為 陳桂香 邱雪亮 范文轅 曾秋娥 朱世昌 黃燕華 郭依琳 張詠翔 鄭伃珺 王姵媖 莊雅鈞 謝艾珊 紀孝儒 黃秉森 賴欣瑜 謝仁豪 黃嘉蕙 宋懷恩 廖慧如 李淑慧 陳志峰 林錦坤 吳敦仁 鍾彥陞 田佳芸 黃文明 蔡國男 陳淑呅 林筱真 辛旻桀 阮苑晴 魏穆禕 劉芳君 林心玲`
+        "菁英會員": `羅慶章 劉怡靜 江敏華 胡庭瑀 林青諺 鍾昇達 李俊彥 陳柏睿 李亭宜 周哲緯 郭秀瑚 朱世杰 何永清 史淑珍 張綺莉 黃振南 陳家雯 魏宛筠 蘇云睿 王曉嵐 甘偲穎 蕭媖瑛 趙桂英 陳信華 吳奇峯 張海樺 張國俊 黃熙翔 葉芝潔 賴尚儀 陳柔安 楊涵甯 廖雲祥 劉美玲 卓俐伶 陳鼎元 鍾環貝 陳君惠 江佩玟 山本貴子 李美玲 陳雨蓁 謝昇穎 林珏吟 陳炎諄 紀賢良 詹靜宜 李國棟 林鈺欽 郭耿維 沈琬 林季寰 官羣峯 薛信月 張惠姿 王瀅婷 吳蕙棻 官巧晶 吳雅嵐 李安琪 陳憶涵 尤儷玲 蕭韻紋 張喆然 黃怡貞 孫欣瑜 蕭佳伶 林靜怡 劉家佐 陳玉珠 林劍鑫 蘇昱彰 邵柏仁 陳崧源 方瀛 李國榮 陳雅芳 邱薰儀 李玹 張貴博 江年生 劉可萱 王志豪 林學宇 陳思樺 陳彥良 吳思辰 蔡柏晟 許良玉 楊修偉 施姵瑄 楊美娥 王嬿婷 賴淑萍 林秀卿 陳文修 官哲至 楊媛媛 蔡東麟 吳芸臻 呂緗翎 陳怡君 林辰 張慎欣 方淑君 李明卓 謝伊婷 王姍喬 黃素秋 孫羚沄 劉建良 吳曼毓 焦珆安 沈惠娟 蔡宏政 黃湲真 施淑惠 方淑鳳 范禾婷 陳吳柏霖 孫大為 陳桂香 邱雪亮 范文轅 曾秋娥 朱世昌 黃燕華 郭依琳 張詠翔 鄭伃珺 王姵媖 莊雅鈞 謝艾珊 紀孝儒 黃秉森 賴欣瑜 謝仁豪 黃嘉蕙 宋懷恩 廖慧如 李淑慧 陳志峰 林錦坤 吳敦仁 鍾彥陞 田佳芸 黃文明 蔡國男 陳淑呅 林筱真 辛旻桀 阮苑晴 魏穆禕 劉芳君 林心玲`
     };
 
-    // 初始化資料庫
     let finalDatabase = [];
     let autoId = 1;
 
@@ -149,15 +193,13 @@
         });
     });
 
-    // 搜尋功能
     const userInput = document.getElementById('userInput');
     const resultList = document.getElementById('resultList');
 
     userInput.addEventListener('input', (e) => {
         const val = e.target.value.trim().toLowerCase();
-        
         if (!val) {
-            resultList.innerHTML = '<div class="no-data">請輸入姓名或編號</div>';
+            resultList.innerHTML = '<div class="no-data">請輸入關鍵字開始查詢</div>';
             return;
         }
 
@@ -166,16 +208,28 @@
         );
 
         if (filtered.length > 0) {
-            resultList.innerHTML = filtered.map(m => `
+            resultList.innerHTML = filtered.map(m => {
+                const textToCopy = `# ${m.id} - ${m.name}`;
+                return `
                 <div class="result-item">
-                    <div class="member-info"># ${m.id} - ${m.name}</div>
-                    <div class="category-label">${m.category}</div>
+                    <div>
+                        <div class="member-info">${textToCopy}</div>
+                        <div class="category-label">${m.category}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('${textToCopy}')">複製</button>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         } else {
             resultList.innerHTML = '<div class="no-data">查無資料</div>';
         }
     });
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('已複製：' + text);
+        });
+    }
 </script>
 
 </body>
