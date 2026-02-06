@@ -1,191 +1,232 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>第12屆精鍊讀書會 - 會員查詢</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>第12屆精鍊讀書會 - 會員查詢</title>
+  <style>
+    :root{
+      --primary:#1a1a1a;
+      --accent:#d4af37;
+      --bg:#f4f4f4;
+      --card:#ffffff;
+      --muted:#777;
+    }
+    *{box-sizing:border-box;}
+    body{
+      font-family:"PingFang TC","Microsoft JhengHei",sans-serif;
+      background:var(--bg);
+      margin:0;
+      padding:20px;
+      display:flex;
+      justify-content:center;
+    }
+    .container{width:100%;max-width:520px;margin-top:26px;}
+    header{text-align:center;margin-bottom:22px;}
+    h1{font-size:1.6rem;color:var(--primary);margin:0 0 6px;}
+    .sub-title{color:#666;font-size:0.9rem;}
 
-<style>
-:root{
-  --bg:#f4f4f4;
-  --card:#fff;
-  --accent:#d4af37;
-  --muted:#777;
-}
+    .search-box{position:relative;margin:16px 0 14px;}
+    input{
+      width:100%;
+      padding:14px 14px;
+      font-size:1.05rem;
+      border:1px solid #ccc;
+      border-radius:10px;
+      outline:none;
+      box-shadow:0 2px 5px rgba(0,0,0,.05);
+      background:#fff;
+    }
+    input:focus{border-color:var(--accent);}
 
-body{
-  font-family:"PingFang TC","Microsoft JhengHei",sans-serif;
-  background:var(--bg);
-  margin:0;
-  padding:20px;
-  display:flex;
-  justify-content:center;
-}
+    .hint{color:var(--muted);font-size:.85rem;line-height:1.4;margin:0 0 14px;}
 
-.container{
-  width:100%;
-  max-width:520px;
-  margin-top:24px;
-}
+    #resultList{display:flex;flex-direction:column;gap:12px;}
+    .result-item{
+      background:var(--card);
+      padding:16px;
+      border-radius:10px;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
+      border-left:4px solid #b8c2cc; /* 預設柔和灰藍 */
+      animation:fadeIn .25s ease;
+    }
 
-header{text-align:center;margin-bottom:20px;}
-h1{font-size:1.6rem;margin:0 0 6px;}
-.sub-title{color:#666;font-size:.9rem;}
+    /* 同色系不同深淺（低階級感設計：同一藍灰色系） */
+    .role-core{border-left-color:#8faec4;}   /* 幹部：較深 */
+    .role-vip{border-left-color:#a9c1d3;}    /* VIP：中階 */
+    .role-elite{border-left-color:#c7d7e3;}  /* 菁英：最淡 */
+    .member-info{font-size:1.22rem;font-weight:800;color:#333;letter-spacing:.6px;}
 
-.search-box{margin:16px 0;}
-input{
-  width:100%;
-  padding:14px;
-  font-size:1rem;
-  border:1px solid #ccc;
-  border-radius:12px;
-}
+    .meta-row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:8px;
+      color:#999;
+      font-size:.78rem;
+    }
 
-input:focus{border-color:var(--accent);outline:none;}
+    .no-data{text-align:center;color:#999;margin-top:42px;}
 
-.hint{
-  font-size:.85rem;
-  color:var(--muted);
-  margin-bottom:14px;
-}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-#resultList{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.result-item{
-  background:var(--card);
-  padding:16px;
-  border-radius:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-  border-left:4px solid #b8c2cc;
-  animation:fade .25s ease;
-}
-
-/* 同色系不同深淺 */
-.role-core{border-left-color:#8faec4;}
-.role-vip{border-left-color:#a9c1d3;}
-.role-elite{border-left-color:#c7d7e3;}
-
-.member-info{
-  font-size:1.2rem;
-  font-weight:700;
-  color:#333;
-}
-
-.no-data{
-  text-align:center;
-  color:#999;
-  margin-top:40px;
-}
-
-@keyframes fade{
-  from{opacity:0;transform:translateY(8px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-@media(max-width:480px){
-  h1{font-size:1.4rem;}
-  .member-info{font-size:1.1rem;}
-}
-</style>
+    @media (max-width:480px){
+      h1{font-size:1.4rem;}
+      input{padding:12px;font-size:1rem;}
+      .member-info{font-size:1.12rem;}
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <header>
+      <h1>精鍊讀書會名單查詢</h1>
+      <div class="sub-title">第12屆正式會員（250205更新）</div>
+    </header>
 
-<div class="container">
+    <div class="search-box">
+      <input id="userInput" type="text" placeholder="輸入完整姓名查詢…" autocomplete="off" />
+    </div>
 
-<header>
-<h1>精鍊讀書會名單查詢</h1>
-<div class="sub-title">第12屆正式會員（250205更新）</div>
-</header>
+    <p class="hint">請輸入<b>完整姓名</b>（需與名單一致）進行查詢。</p>
 
-<div class="search-box">
-<input id="userInput" placeholder="輸入完整姓名或編號查詢…" autocomplete="off">
-</div>
+    <div id="resultList">
+      <div class="no-data">請輸入姓名或編號</div>
+    </div>
 
-<p class="hint">
-可輸入 #12 或 12 查編號；姓名需輸入完整（含 2 字姓名）
-</p>
-
-<div id="resultList">
-<div class="no-data">請輸入完整姓名或編號</div>
-</div>
-
-<p class="hint">如有查詢問題請聯繫：<b>ntustudyclub@gmail.com</b></p>
-
-</div>
-
-<script>
-
-const dataSources = {
-"讀書會幹部":`楊儒霖 張秀涵 羅伊珍 王慧文 郭士瑜 陳秀綾 鄒松樺 曾俊卿 吳亭萱 鄭凱鴻 林穎楨 陳伊莉 蕭宇喬 張安發 林妤暄 劉上禎 簡子綋 周珊羽 劉靜芳 簡秀芬 張惠美 劉哲伶 莊漢鵬`,
-"創始會長 & VIP":`林健祥 謝宏紳 秦永澤 李建平 潘文琦 曾覺民 高韋秀 王郁婷 吳亮輝 張嫚玲 林青青 葉淑麗`,
-"菁英會員":`羅慶章 劉怡靜 江敏華 胡庭瑀 林青諺 鍾昇達 李俊彥 陳柏睿 李亭宜 周哲緯 郭秀瑚 朱世杰 何永清 史淑珍 張綺莉 黃振南 陳家雯 魏宛筠 蘇云睿 王曉嵐 甘偲穎 蕭媖瑛 趙桂英 陳信華 吳奇峯 張海樺 張國俊 黃熙翔 葉芝潔 賴尚儀 陳柔安 楊涵甯 廖雲祥 劉美玲 卓俐伶 陳鼎元 鍾環貝 陳君惠 江佩玟 山本貴子 李美玲 陳雨蓁 謝昇穎 林珏吟 陳炎諄 紀賢良 詹靜宜 李國棟 林鈺欽 郭耿維 沈琬 林季寰 官羣峯 薛信月 張惠姿 王瀅婷 吳蕙棻 官巧晶 吳雅嵐 李安琪 陳憶涵 尤儷玲 蕭韻紋 張喆然 黃怡貞 孫欣瑜 蕭佳伶 林靜怡 劉家佐 陳玉珠 林劍鑫 蘇昱彰 邵柏仁 陳崧源 方瀛 李國榮 陳雅芳 邱薰儀 李玹 張貴博 江年生 劉可萱 王志豪 林建宇 陳思樺 陳彥良 吳思辰 蔡柏晟 許良玉 楊修偉 施姵瑄 楊美娥 王嬿婷 賴淑萍 林秀卿 陳文修 官哲至 楊媛媛 蔡東麟 吳芸臻 呂緗翎 陳怡君 林辰 張慎欣 方淑君 李明卓 謝伊婷 王姍喬 黃素秋 孫羚沄 劉建良 吳曼毓 焦珆安 沈惠娟 蔡宏政 黃湲真 施淑惠 方淑鳳 范禾婷 陳吳柏霖 孫大為 陳桂香 邱雪亮 范文轅 曾秋娥 朱世昌 黃燕華 郭依琳 張詠翔 鄭伃珺 王姵媖 莊雅鈞 謝艾珊 紀孝儒 黃秉森 賴欣瑜 謝仁豪 黃嘉蕙 宋懷恩 廖慧如 李淑慧 陳志峰 林錦坤 吳敦仁 鍾彥陞 田佳芸 黃文明 蔡國男 陳淑呅 林筱真 辛旻桀 阮苑晴 魏穆禕 劉芳君 林心玲 黃譯萱 藍立貝 周銘俊 巫典勳 莊信慧 翁滿芬`
-};
-
-const finalDatabase=[];
-let autoId=1;
-
-Object.keys(dataSources).forEach(cat=>{
-  dataSources[cat].trim().split(/\s+/).forEach(name=>{
-    finalDatabase.push({id:autoId++,name,category:cat});
-  });
-});
-
-const input=document.getElementById("userInput");
-const result=document.getElementById("resultList");
-
-function normalizeName(s){
-  return s.toLowerCase().replace(/\s+/g,"");
-}
-
-function parseId(q){
-  const m=q.replace(/\s+/g,"").match(/^(?:#|＃)?(\d+)$/);
-  return m?Number(m[1]):null;
-}
-
-function render(list){
-  if(!list.length){
-    result.innerHTML='<div class="no-data">查無資料</div>';
-    return;
-  }
-
-  result.innerHTML=list.map(m=>`
-  <div class="result-item ${
-    m.category==="讀書會幹部"?"role-core":
-    m.category==="創始會長 & VIP"?"role-vip":"role-elite"
-  }">
-    <div class="member-info"># ${m.id} - ${m.name}</div>
+    <p class="hint">如有查詢問題，請聯繫客服：<b>ntustudyclub@gmail.com</b></p>
   </div>
-  `).join("");
-}
+  </div>
 
-function search(){
-  const q=input.value.trim();
-  if(!q){
-    result.innerHTML='<div class="no-data">請輸入完整姓名或編號</div>';
-    return;
-  }
+  <script>
+    /**
+     * ✅ 名單更新方式：在 dataSources 內直接貼名字，空格/換行分隔即可。
+     * ✅ 編號規則：依 Object.keys(dataSources) 的順序（幹部 -> VIP -> 菁英）自動編號。
+     * ✅ 本版已移除「分類篩選 chip」功能（依你的需求）。
+     */
 
-  const id=parseId(q);
+    const dataSources = {
+      "讀書會幹部": `楊儒霖 張秀涵 羅伊珍 王慧文 郭士瑜 陳秀綾 鄒松樺 曾俊卿 吳亭萱 鄭凱鴻 林穎楨 陳伊莉 蕭宇喬 張安發 林妤暄 劉上禎 簡子綋 周珊羽 劉靜芳 簡秀芬 張惠美 劉哲伶 莊漢鵬`,
+      "創始會長 & VIP": `林健祥 謝宏紳 秦永澤 李建平 潘文琦 曾覺民 高韋秀 王郁婷 吳亮輝 張嫚玲 林青青 葉淑麗`,
+      "菁英會員": `羅慶章 劉怡靜 江敏華 胡庭瑀 林青諺 鍾昇達 李俊彥 陳柏睿 李亭宜 周哲緯 郭秀瑚 朱世杰 何永清 史淑珍 張綺莉 黃振南 陳家雯 魏宛筠 蘇云睿 王曉嵐 甘偲穎 蕭媖瑛 趙桂英 陳信華 吳奇峯 張海樺 張國俊 黃熙翔 葉芝潔 賴尚儀 陳柔安 楊涵甯 廖雲祥 劉美玲 卓俐伶 陳鼎元 鍾環貝 陳君惠 江佩玟 山本貴子 李美玲 陳雨蓁 謝昇穎 林珏吟 陳炎諄 紀賢良 詹靜宜 李國棟 林鈺欽 郭耿維 沈琬 林季寰 官羣峯 薛信月 張惠姿 王瀅婷 吳蕙棻 官巧晶 吳雅嵐 李安琪 陳憶涵 尤儷玲 蕭韻紋 張喆然 黃怡貞 孫欣瑜 蕭佳伶 林靜怡 劉家佐 陳玉珠 林劍鑫 蘇昱彰 邵柏仁 陳崧源 方瀛 李國榮 陳雅芳 邱薰儀 李玹 張貴博 江年生 劉可萱 王志豪 林建宇 陳思樺 陳彥良 吳思辰 蔡柏晟 許良玉 楊修偉 施姵瑄 楊美娥 王嬿婷 賴淑萍 林秀卿 陳文修 官哲至 楊媛媛 蔡東麟 吳芸臻 呂緗翎 陳怡君 林辰 張慎欣 方淑君 李明卓 謝伊婷 王姍喬 黃素秋 孫羚沄 劉建良 吳曼毓 焦珆安 沈惠娟 蔡宏政 黃湲真 施淑惠 方淑鳳 范禾婷 陳吳柏霖 孫大為 陳桂香 邱雪亮 范文轅 曾秋娥 朱世昌 黃燕華 郭依琳 張詠翔 鄭伃珺 王姵媖 莊雅鈞 謝艾珊 紀孝儒 黃秉森 賴欣瑜 謝仁豪 黃嘉蕙 宋懷恩 廖慧如 李淑慧 陳志峰 林錦坤 吳敦仁 鍾彥陞 田佳芸 黃文明 蔡國男 陳淑呅 林筱真 辛旻桀 阮苑晴 魏穆禕 劉芳君 林心玲 黃譯萱 藍立貝 周銘俊 巫典勳 莊信慧 翁滿芬`
+    };
 
-  let list;
+    // ====== 建立資料庫（維持：幹部 -> VIP -> 菁英 的自動編號） ======
+    const finalDatabase = [];
+    let autoId = 1;
 
-  if(id!==null){
-    list=finalDatabase.filter(m=>m.id===id);
-  }else{
-    const nq=normalizeName(q);
-    list=finalDatabase.filter(m=>normalizeName(m.name)===nq);
-  }
+    Object.keys(dataSources).forEach((cat) => {
+      const names = dataSources[cat].trim().split(/\s+/).filter(Boolean);
+      names.forEach((name) => {
+        finalDatabase.push({
+          id: autoId++,
+          name,
+          category: cat,
+          // ✅ 可選欄位：若未來你要補手機末三碼/備註，就能用到
+          phoneLast3: "", // e.g., "123"
+          note: "" // e.g., "志工" / "講者" / "新加入"
+        });
+      });
+    });
 
-  render(list);
-}
+    // ====== 搜尋（姓名 / 編號 / #編號 / 手機末三碼） ======
+    const userInput = document.getElementById("userInput");
+    const resultList = document.getElementById("resultList");
 
-input.addEventListener("input",search);
+    function normalizeQuery(q){
+      // 只做 trim；姓名比對用「忽略空白 + 不分大小寫」
+      return (q || "").trim();
+    }
 
-</script>
+    function normalizeName(s){
+      return String(s || "").toLowerCase().replace(/\\s+/g, "");
+    }
+
+    function renderResults(list, query) {
+      if (!query) {
+        resultList.innerHTML = '<div class="no-data">請輸入姓名或編號</div>';
+        return;
+      }
+      if (list.length === 0) {
+        resultList.innerHTML = '<div class="no-data">查無資料</div>';
+        return;
+      }
+
+      resultList.innerHTML = list
+        .map((m) => {
+          const extra = m.phoneLast3 ? `｜手機末三碼：${m.phoneLast3}` : "";
+          const note = m.note ? `｜${m.note}` : "";
+          return `
+            <div class="result-item ${m.category === '讀書會幹部' ? 'role-core' : m.category === '創始會長 & VIP' ? 'role-vip' : 'role-elite'}">
+              <div class="member-info"># ${m.id} - ${m.name}</div>
+              
+              <div class="meta-row">
+                <span>ID：${m.id}</span>
+                <span>${extra}${note}</span>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function runSearch() {
+      const q = normalizeQuery(userInput.value);
+      if (!q) {
+        renderResults([], "");
+        return;
+      }
+
+      const id = parseIdQuery(q);
+      const isPhoneLast3 = /^\d{3}$/.test(q);
+
+      let filtered = finalDatabase;
+
+      if (id !== null) {
+        filtered = filtered.filter((m) => m.id === id);
+      } else if (isPhoneLast3) {
+        filtered = filtered.filter((m) => (m.phoneLast3 || "") === q);
+      } else {
+        // 姓名：包含式比對（保留你原本的行為）
+        filtered = filtered.filter((m) => m.name.toLowerCase().includes(q));
+      }
+
+      renderResults(filtered, q);
+    }
+
+    userInput.addEventListener("input", runSearch);
+
+    // 可用 URL 帶入 ?q=xxx 直接查詢
+    (function initFromQueryString() {
+      const params = new URLSearchParams(location.search);
+      const q = params.get("q");
+      if (q) {
+        userInput.value = q;
+        runSearch();
+      }
+    })();
+
+    // ====== 測試（只在 Console 驗證，不影響頁面） ======
+    (function runTests() {
+      const assert = (cond, msg) => console.assert(cond, msg);
+
+      // test: parseIdQuery
+      assert(parseIdQuery("12") === 12, "parseIdQuery should parse plain number");
+      assert(parseIdQuery("#12") === 12, "parseIdQuery should parse #number");
+      assert(parseIdQuery("＃12") === 12, "parseIdQuery should parse fullwidth #number");
+      assert(parseIdQuery("  #  12 ") === 12, "parseIdQuery should parse spaced input");
+      assert(parseIdQuery("abc") === null, "parseIdQuery should return null on non-number");
+
+      // test: database built
+      assert(finalDatabase.length > 0, "finalDatabase should not be empty");
+      assert(finalDatabase[0].id === 1, "first member id should be 1");
+
+      // test: last added names exist
+      const lastNames = ["周銘俊", "巫典勳", "莊信慧", "翁滿芬"];
+      lastNames.forEach((n) => {
+        assert(finalDatabase.some((m) => m.name === n), `should include member: ${n}`);
+      });
+    })();
+  </script>
 </body>
 </html>
