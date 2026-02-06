@@ -7,73 +7,101 @@
   <style>
     :root{
       --primary:#1a1a1a;
-      --accent:#d4af37;
+      --muted:#777;
       --bg:#f4f4f4;
       --card:#ffffff;
-      --muted:#777;
+      --stroke:rgba(0,0,0,.08);
+      --hl:rgba(212,175,55,.22);
     }
     *{box-sizing:border-box;}
+
     body{
       font-family:"PingFang TC","Microsoft JhengHei",sans-serif;
-      background:var(--bg);
+      background:linear-gradient(180deg,#f7f7f7 0%, #f1f1f1 60%, #f4f4f4 100%);
       margin:0;
-      padding:20px;
+      padding:18px;
       display:flex;
       justify-content:center;
     }
-    .container{width:100%;max-width:520px;margin-top:26px;}
-    header{text-align:center;margin-bottom:22px;}
-    h1{font-size:1.6rem;color:var(--primary);margin:0 0 6px;}
-    .sub-title{color:#666;font-size:0.9rem;}
 
-    .search-box{position:relative;margin:16px 0 14px;}
+    .container{width:100%;max-width:560px;margin-top:10px;}
+
+    header{
+      text-align:center;
+      margin:0 0 14px;
+      padding:16px 14px;
+      background:rgba(255,255,255,.86);
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.05);
+      backdrop-filter:blur(10px);
+    }
+    h1{font-size:1.55rem;color:var(--primary);margin:0 0 6px;letter-spacing:.5px;}
+    .sub-title{color:#666;font-size:0.92rem;}
+
+    .search-box{position:relative;margin:14px 0 10px;}
+    .search-box::before{
+      content:"🔎";
+      position:absolute;
+      left:12px;
+      top:50%;
+      transform:translateY(-50%);
+      opacity:.55;
+      pointer-events:none;
+      font-size:1rem;
+    }
     input{
       width:100%;
-      padding:14px 14px;
+      padding:14px 14px 14px 40px;
       font-size:1.05rem;
-      border:1px solid #ccc;
-      border-radius:10px;
+      border:1px solid #d7d7d7;
+      border-radius:16px;
       outline:none;
-      box-shadow:0 2px 5px rgba(0,0,0,.05);
+      box-shadow:0 6px 18px rgba(0,0,0,.06);
       background:#fff;
     }
-    input:focus{border-color:var(--accent);}
+    input:focus{border-color:rgba(212,175,55,.8);box-shadow:0 10px 26px rgba(0,0,0,.08);}
 
-    .hint{color:var(--muted);font-size:.85rem;line-height:1.4;margin:0 0 14px;}
+    .hint{color:var(--muted);font-size:.85rem;line-height:1.45;margin:0 4px 12px;}
 
     #resultList{display:flex;flex-direction:column;gap:12px;}
     .result-item{
       background:var(--card);
       padding:16px;
-      border-radius:10px;
-      box-shadow:0 2px 8px rgba(0,0,0,.08);
-      border-left:4px solid #b8c2cc; /* 預設柔和灰藍 */
-      animation:fadeIn .25s ease;
+      border-radius:16px;
+      border:1px solid var(--stroke);
+      box-shadow:0 10px 26px rgba(0,0,0,.06);
+      border-left:4px solid #b8c2cc;
+      animation:fadeIn .18s ease;
+      transition:transform .12s ease, box-shadow .12s ease;
     }
+    .result-item:active{transform:scale(.99);} 
 
     /* 同色系不同深淺（低階級感設計：同一藍灰色系） */
-    .role-core{border-left-color:#8faec4;}   /* 幹部：較深 */
-    .role-vip{border-left-color:#a9c1d3;}    /* VIP：中階 */
-    .role-elite{border-left-color:#c7d7e3;}  /* 菁英：最淡 */
-    .member-info{font-size:1.22rem;font-weight:800;color:#333;letter-spacing:.6px;}
+    .role-core{border-left-color:#8faec4;}
+    .role-vip{border-left-color:#a9c1d3;}
+    .role-elite{border-left-color:#c7d7e3;}
 
-    .meta-row{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      margin-top:8px;
-      color:#999;
-      font-size:.78rem;
-    }
+    /* 查到自己：淡淡動畫回饋 */
+    .found-self{animation:fadeIn .18s ease, pulse 1.05s ease 1; box-shadow:0 14px 34px rgba(0,0,0,.10);}
+    @keyframes pulse{0%{transform:scale(1)}45%{transform:scale(1.012)}100%{transform:scale(1)}}
+
+    .member-info{font-size:1.18rem;font-weight:800;color:#333;letter-spacing:.4px;}
+
+    mark.hl{background:var(--hl);padding:0 .12em;border-radius:.35em;}
 
     .no-data{text-align:center;color:#999;margin-top:42px;}
 
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
     @media (max-width:480px){
-      h1{font-size:1.4rem;}
-      input{padding:12px;font-size:1rem;}
-      .member-info{font-size:1.12rem;}
+      body{padding:12px;}
+      header{border-radius:18px;padding:14px 12px;}
+      h1{font-size:1.38rem;}
+      input{padding:13px 14px 13px 40px;font-size:1rem;border-radius:18px;}
+      .result-item{border-radius:18px;padding:14px;}
+      .member-info{font-size:1.08rem;}
+      .hint{font-size:.84rem;}
     }
   </style>
 </head>
@@ -88,143 +116,119 @@
       <input id="userInput" type="text" placeholder="輸入完整姓名查詢…" autocomplete="off" />
     </div>
 
-    <p class="hint">請輸入<b>完整姓名</b>（需與名單一致）進行查詢。</p>
+    <p class="hint">只能用<b>完整姓名</b>查詢（需與名單一致；可忽略空白，如「鄒 松 樺」）。</p>
 
     <div id="resultList">
-      <div class="no-data">請輸入姓名或編號</div>
+      <div class="no-data">請輸入完整姓名</div>
     </div>
 
     <p class="hint">如有查詢問題，請聯繫客服：<b>ntustudyclub@gmail.com</b></p>
   </div>
-  </div>
 
   <script>
-    /**
-     * ✅ 名單更新方式：在 dataSources 內直接貼名字，空格/換行分隔即可。
-     * ✅ 編號規則：依 Object.keys(dataSources) 的順序（幹部 -> VIP -> 菁英）自動編號。
-     * ✅ 本版已移除「分類篩選 chip」功能（依你的需求）。
-     */
-
+    // ====== 名單 ======
     const dataSources = {
       "讀書會幹部": `楊儒霖 張秀涵 羅伊珍 王慧文 郭士瑜 陳秀綾 鄒松樺 曾俊卿 吳亭萱 鄭凱鴻 林穎楨 陳伊莉 蕭宇喬 張安發 林妤暄 劉上禎 簡子綋 周珊羽 劉靜芳 簡秀芬 張惠美 劉哲伶 莊漢鵬`,
       "創始會長 & VIP": `林健祥 謝宏紳 秦永澤 李建平 潘文琦 曾覺民 高韋秀 王郁婷 吳亮輝 張嫚玲 林青青 葉淑麗`,
       "菁英會員": `羅慶章 劉怡靜 江敏華 胡庭瑀 林青諺 鍾昇達 李俊彥 陳柏睿 李亭宜 周哲緯 郭秀瑚 朱世杰 何永清 史淑珍 張綺莉 黃振南 陳家雯 魏宛筠 蘇云睿 王曉嵐 甘偲穎 蕭媖瑛 趙桂英 陳信華 吳奇峯 張海樺 張國俊 黃熙翔 葉芝潔 賴尚儀 陳柔安 楊涵甯 廖雲祥 劉美玲 卓俐伶 陳鼎元 鍾環貝 陳君惠 江佩玟 山本貴子 李美玲 陳雨蓁 謝昇穎 林珏吟 陳炎諄 紀賢良 詹靜宜 李國棟 林鈺欽 郭耿維 沈琬 林季寰 官羣峯 薛信月 張惠姿 王瀅婷 吳蕙棻 官巧晶 吳雅嵐 李安琪 陳憶涵 尤儷玲 蕭韻紋 張喆然 黃怡貞 孫欣瑜 蕭佳伶 林靜怡 劉家佐 陳玉珠 林劍鑫 蘇昱彰 邵柏仁 陳崧源 方瀛 李國榮 陳雅芳 邱薰儀 李玹 張貴博 江年生 劉可萱 王志豪 林建宇 陳思樺 陳彥良 吳思辰 蔡柏晟 許良玉 楊修偉 施姵瑄 楊美娥 王嬿婷 賴淑萍 林秀卿 陳文修 官哲至 楊媛媛 蔡東麟 吳芸臻 呂緗翎 陳怡君 林辰 張慎欣 方淑君 李明卓 謝伊婷 王姍喬 黃素秋 孫羚沄 劉建良 吳曼毓 焦珆安 沈惠娟 蔡宏政 黃湲真 施淑惠 方淑鳳 范禾婷 陳吳柏霖 孫大為 陳桂香 邱雪亮 范文轅 曾秋娥 朱世昌 黃燕華 郭依琳 張詠翔 鄭伃珺 王姵媖 莊雅鈞 謝艾珊 紀孝儒 黃秉森 賴欣瑜 謝仁豪 黃嘉蕙 宋懷恩 廖慧如 李淑慧 陳志峰 林錦坤 吳敦仁 鍾彥陞 田佳芸 黃文明 蔡國男 陳淑呅 林筱真 辛旻桀 阮苑晴 魏穆禕 劉芳君 林心玲 黃譯萱 藍立貝 周銘俊 巫典勳 莊信慧 翁滿芬`
     };
 
-    // ====== 建立資料庫（維持：幹部 -> VIP -> 菁英 的自動編號） ======
+    // ====== 建資料庫（幹部 -> VIP -> 菁英 自動編號） ======
     const finalDatabase = [];
     let autoId = 1;
-
     Object.keys(dataSources).forEach((cat) => {
       const names = dataSources[cat].trim().split(/\s+/).filter(Boolean);
-      names.forEach((name) => {
-        finalDatabase.push({
-          id: autoId++,
-          name,
-          category: cat,
-          // ✅ 可選欄位：若未來你要補手機末三碼/備註，就能用到
-          phoneLast3: "", // e.g., "123"
-          note: "" // e.g., "志工" / "講者" / "新加入"
-        });
-      });
+      names.forEach((name) => finalDatabase.push({ id: autoId++, name, category: cat }));
     });
 
-    // ====== 搜尋（姓名 / 編號 / #編號 / 手機末三碼） ======
-    const userInput = document.getElementById("userInput");
-    const resultList = document.getElementById("resultList");
-
-    function normalizeQuery(q){
-      // 只做 trim；姓名比對用「忽略空白 + 不分大小寫」
-      return (q || "").trim();
-    }
+    const userInput = document.getElementById('userInput');
+    const resultList = document.getElementById('resultList');
 
     function normalizeName(s){
-      return String(s || "").toLowerCase().replace(/\\s+/g, "");
+      return String(s || '').toLowerCase().replace(/\s+/g, '');
     }
 
-    function renderResults(list, query) {
-      if (!query) {
-        resultList.innerHTML = '<div class="no-data">請輸入姓名或編號</div>';
-        return;
-      }
-      if (list.length === 0) {
-        resultList.innerHTML = '<div class="no-data">查無資料</div>';
-        return;
-      }
-
-      resultList.innerHTML = list
-        .map((m) => {
-          const extra = m.phoneLast3 ? `｜手機末三碼：${m.phoneLast3}` : "";
-          const note = m.note ? `｜${m.note}` : "";
-          return `
-            <div class="result-item ${m.category === '讀書會幹部' ? 'role-core' : m.category === '創始會長 & VIP' ? 'role-vip' : 'role-elite'}">
-              <div class="member-info"># ${m.id} - ${m.name}</div>
-              
-              <div class="meta-row">
-                <span>ID：${m.id}</span>
-                <span>${extra}${note}</span>
-              </div>
-            </div>
-          `;
-        })
-        .join("");
+    function escapeHTML(str){
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/\"/g,'&quot;')
+        .replace(/'/g,'&#39;');
     }
 
-    function runSearch() {
-      const q = normalizeQuery(userInput.value);
-      if (!q) {
-        renderResults([], "");
+    function highlightFullName(name, rawQuery){
+      // 完整姓名命中時，把整個姓名做淡高亮（不做局部，避免誤導）
+      const n = escapeHTML(name);
+      const q = normalizeName(rawQuery);
+      if (q && normalizeName(name) === q) return `<mark class="hl">${n}</mark>`;
+      return n;
+    }
+
+    function roleClass(category){
+      if (category === '讀書會幹部') return 'role-core';
+      if (category === '創始會長 & VIP') return 'role-vip';
+      return 'role-elite';
+    }
+
+    function renderPrompt(){
+      resultList.innerHTML = '<div class="no-data">請輸入完整姓名</div>';
+    }
+
+    function renderResults(list, rawQuery){
+      if (!rawQuery){
+        renderPrompt();
+        return;
+      }
+      if (list.length === 0){
+        // ✅ 輸入錯誤時即時提示
+        resultList.innerHTML = '<div class="no-data">請輸入完整姓名</div>';
         return;
       }
 
-      const id = parseIdQuery(q);
-      const isPhoneLast3 = /^\d{3}$/.test(q);
-
-      let filtered = finalDatabase;
-
-      if (id !== null) {
-        filtered = filtered.filter((m) => m.id === id);
-      } else if (isPhoneLast3) {
-        filtered = filtered.filter((m) => (m.phoneLast3 || "") === q);
-      } else {
-        // 姓名：包含式比對（保留你原本的行為）
-        filtered = filtered.filter((m) => m.name.toLowerCase().includes(q));
-      }
-
-      renderResults(filtered, q);
+      resultList.innerHTML = list.map((m) => {
+        const role = roleClass(m.category);
+        return `
+          <div class="result-item ${role} found-self">
+            <div class="member-info"># ${m.id} - ${highlightFullName(m.name, rawQuery)}</div>
+          </div>
+        `;
+      }).join('');
     }
 
-    userInput.addEventListener("input", runSearch);
+    function runSearch(){
+      const raw = (userInput.value || '').trim();
+      if (!raw){
+        renderPrompt();
+        return;
+      }
 
-    // 可用 URL 帶入 ?q=xxx 直接查詢
-    (function initFromQueryString() {
+      const q = normalizeName(raw);
+      // ✅ 只能完整姓名查詢
+      const filtered = finalDatabase.filter((m) => normalizeName(m.name) === q);
+      renderResults(filtered, raw);
+    }
+
+    userInput.addEventListener('input', runSearch);
+
+    // 允許 URL 帶入 ?q=姓名
+    (function initFromQueryString(){
       const params = new URLSearchParams(location.search);
-      const q = params.get("q");
-      if (q) {
+      const q = params.get('q');
+      if (q){
         userInput.value = q;
         runSearch();
       }
     })();
 
-    // ====== 測試（只在 Console 驗證，不影響頁面） ======
-    (function runTests() {
-      const assert = (cond, msg) => console.assert(cond, msg);
+    // 初始提示
+    renderPrompt();
 
-      // test: parseIdQuery
-      assert(parseIdQuery("12") === 12, "parseIdQuery should parse plain number");
-      assert(parseIdQuery("#12") === 12, "parseIdQuery should parse #number");
-      assert(parseIdQuery("＃12") === 12, "parseIdQuery should parse fullwidth #number");
-      assert(parseIdQuery("  #  12 ") === 12, "parseIdQuery should parse spaced input");
-      assert(parseIdQuery("abc") === null, "parseIdQuery should return null on non-number");
-
-      // test: database built
-      assert(finalDatabase.length > 0, "finalDatabase should not be empty");
-      assert(finalDatabase[0].id === 1, "first member id should be 1");
-
-      // test: last added names exist
-      const lastNames = ["周銘俊", "巫典勳", "莊信慧", "翁滿芬"];
-      lastNames.forEach((n) => {
-        assert(finalDatabase.some((m) => m.name === n), `should include member: ${n}`);
+    // 簡單測試（console）
+    (function tests(){
+      console.assert(finalDatabase.length > 0, 'finalDatabase should not be empty');
+      ['周銘俊','巫典勳','莊信慧','翁滿芬'].forEach(n => {
+        console.assert(finalDatabase.some(m => m.name === n), 'should include ' + n);
       });
     })();
   </script>
